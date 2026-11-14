@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIVIDED — 사라진 연결 | Social Issue RPG Adventure</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cinzel, Noto Serif KR, Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --gold-primary: #e8c37d;
+      --gold-bright: #fff0c2;
+      --gold-dark: #8c6628;
+      --crimson-glow: rgba(220, 38, 38, 0.45);
+      --celestial-glow: rgba(56, 189, 248, 0.45);
+      --panel-bg: rgba(16, 15, 28, 0.78);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #0b0a14;
+      color: #f3efe6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .font-cinzel {
+      font-family: 'Cinzel', serif;
+    }
+
+    .font-serif-kr {
+      font-family: 'Noto Serif KR', serif;
+    }
+
+    /* 판타지 금장 테두리 패널 스타일 */
+    .fantasy-panel {
+      background: linear-gradient(145deg, rgba(22, 20, 38, 0.85), rgba(12, 11, 22, 0.9));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(232, 195, 125, 0.45);
+      box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.65),
+        inset 0 0 20px rgba(232, 195, 125, 0.08);
+      position: relative;
+    }
+
+    .fantasy-panel::before,
+    .fantasy-panel::after {
+      content: '✦';
+      position: absolute;
+      color: var(--gold-primary);
+      font-size: 10px;
+      line-height: 1;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .fantasy-panel::before { top: 4px; left: 6px; }
+    .fantasy-panel::after { bottom: 4px; right: 6px; }
+
+    /* 금빛 주요 CTA 버튼 */
+    .fantasy-btn-gold {
+      background: linear-gradient(180deg, rgba(168, 124, 52, 0.85) 0%, rgba(92, 64, 22, 0.95) 100%);
+      border: 1.5px solid #f5d896;
+      box-shadow: 0 0 20px rgba(232, 195, 125, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+      color: #fff8e7;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+    }
+    .fantasy-btn-gold:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 30px rgba(245, 216, 150, 0.75), inset 0 1px 4px rgba(255, 255, 255, 0.6);
+      background: linear-gradient(180deg, rgba(196, 148, 66, 0.92) 0%, rgba(115, 81, 29, 0.98) 100%);
+    }
+    .fantasy-btn-gold:active:not(:disabled) {
+      transform: translateY(0) scale(0.99);
+    }
+    .fantasy-btn-gold:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: grayscale(0.6);
+    }
+
+    /* 일반 선택지 버튼 */
+    .fantasy-choice-btn {
+      background: linear-gradient(90deg, rgba(28, 25, 48, 0.85), rgba(18, 16, 32, 0.92));
+      border: 1px solid rgba(232, 195, 125, 0.35);
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .fantasy-choice-btn:hover {
+      border-color: #f5d896;
+      background: linear-gradient(90deg, rgba(78, 59, 28, 0.75), rgba(32, 28, 54, 0.9));
+      box-shadow: 0 0 18px rgba(232, 195, 125, 0.35);
+      transform: translateX(4px);
+    }
+    .fantasy-choice-btn.completed {
+      border-color: rgba(110, 231, 183, 0.6);
+      background: linear-gradient(90deg, rgba(16, 65, 52, 0.65), rgba(18, 22, 38, 0.88));
+    }
+
+    /* 타이틀 텍스트 메탈릭 그라데이션 */
+    .title-metallic {
+      background: linear-gradient(180deg, #ffffff 15%, #f5d896 55%, #b58638 95%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.85));
+    }
+
+    /* 장면별 판타지 배경 테마 */
+    .bg-stage-title {
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255, 210, 130, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 18% 35%, rgba(190, 24, 45, 0.48) 0%, transparent 55%),
+        radial-gradient(circle at 82% 30%, rgba(56, 165, 245, 0.45) 0%, transparent 55%),
+        linear-gradient(115deg, #1a0912 0%, #1c1630 48%, #102642 100%);
+    }
+    .bg-stage-q1 {
+      background:
+        radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 20% 40%, rgba(185, 28, 28, 0.45) 0%, transparent 55%),
+        radial-gradient(circle at 80% 40%, rgba(29, 78, 216, 0.42) 0%, transparent 55%),
+        linear-gradient(180deg, #1b1026 0%, #121122 60%, #090812 100%);
+    }
+    .bg-stage-q2 {
+      background:
+        radial-gradient(circle at 65% 25%, rgba(251, 191, 36, 0.25) 0%, transparent 50%),
+        radial-gradient(circle at 30% 60%, rgba(59, 130, 246, 0.28) 0%, transparent 55%),
+        linear-gradient(160deg, #0d1326 0%, #161c3a 50%, #0a0d1a 100%);
+    }
+    .bg-stage-q3 {
+      background:
+        radial-gradient(circle at 65% 45%, rgba(225, 29, 72, 0.3) 0%, transparent 48%),
+        radial-gradient(circle at 25% 30%, rgba(99, 102, 241, 0.28) 0%, transparent 55%),
+        linear-gradient(145deg, #140d24 0%, #1f122b 50%, #0d0b18 100%);
+    }
+    .bg-stage-q4 {
+      background:
+        radial-gradient(circle at 50% 42%, rgba(253, 224, 71, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 75% 45%, rgba(56, 189, 248, 0.25) 0%, transparent 50%),
+        linear-gradient(180deg, #10152e 0%, #1a1836 55%, #0b0c1a 100%);
+    }
+    .bg-stage-q5 {
+      background:
+        radial-gradient(circle at 50% 45%, rgba(253, 230, 138, 0.38) 0%, transparent 55%),
+        radial-gradient(circle at 22% 35%, rgba(168, 85, 247, 0.28) 0%, transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(56, 189, 248, 0.35) 0%, transparent 55%),
+        linear-gradient(180deg, #1e1b4b 0%, #2b235a 45%, #13162b 100%);
+    }
+
+    /* 부유 애니메이션 */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+    .animate-float {
+      animation: floatSlow 4.5s ease-in-out infinite;
+    }
+    .animate-float-delay {
+      animation: floatSlow 5.2s ease-in-out 1.4s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(232, 195, 125, 0.5)); }
+      50% { filter: drop-shadow(0 0 20px rgba(253, 224, 71, 0.95)); }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 2.8s ease-in-out infinite;
+    }
+
+    /* 회전 마법진 */
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spinSlow 45s linear infinite;
+    }
+
+    /* 크리스탈 보석 다이아몬드 형태 */
+    .crystal-gem {
+      clip-path: polygon(50% 0%, 92% 28%, 92% 72%, 50% 100%, 8% 72%, 8% 28%);
+      transition: all 0.35s ease;
+    }
+    .crystal-gem:hover {
+      transform: scale(1.1) translateY(-4px);
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(12, 11, 22, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(232, 195, 125, 0.45);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="bg-stage-title transition-colors duration-1000">
+
+  <!-- 파티클 캔버스 (빛가루 / 불티 / 마법 입자) -->
+  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+  <!-- 배경 건축 실루엣 & 판타지 오브젝트 레이어 (SVG) -->
+  <div id="fantasyBackdrop" class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-85 transition-opacity duration-700">
+    <!-- 중앙 빛의 균열 / 마법진 -->
+    <svg class="w-full h-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="centerSun" cx="50%" cy="45%" r="45%">
+          <stop offset="0%" stop-color="#fde68a" stop-opacity="0.32"/>
+          <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="crimsonCastle" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#4c0519" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#090710" stop-opacity="0.98"/>
+        </linearGradient>
+        <linearGradient id="azureCastle" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.75"/>
+          <stop offset="100%" stop-color="#090d1c" stop-opacity="0.98"/>
+        </linearGradient>
+        <linearGradient id="bridgeGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/>
+        
+          <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.6"/>
+        </linearGradient>
+      </defs>
+
+      <!-- 중앙 신비로운 광원 -->
+      <circle cx="720" cy="400" r="460" fill="url(#centerSun)" />
+
+      <!-- 회전하는 고대 아케인 룬 원형 -->
+      <g transform="translate(720, 390)">
+        <g class="animate-spin-slow" opacity="0.22">
+          <circle r="260" fill="none" stroke="#e8c37d" stroke-width="1" stroke-dasharray="8 6"/>
+          <circle r="215" fill="none" stroke="#e8c37d" stroke-width="0.8"/>
+          <polygon points="0,-240 208,120 -208,120" fill="none" stroke="#e8c37d" stroke-width="0.7"/>
+          <polygon points="0,240 208,-120 -208,-120" fill="none" stroke="#e8c37d" stroke-width="0.7"/>
+        </g>
+      </g>
+
+      <!-- 좌측 붉은 황혼의 첨탑 실루엣 (분열/갈등 진영) -->
+      <g id="leftCastleGroup" opacity="0.78">
+        <path d="M-20,900 L-20,380 L40,340 L65,240 L90,340 L140,360 L175,200 L210,360 L270,390 L295,290 L325,410 L420,480 L420,900 Z" fill="url(#crimsonCastle)"/>
+        <!-- 첨탑 창문 불빛 -->
+        <rect x="170" y="275" width="10" height="22" rx="4" fill="#fb7185" opacity="0.65"/>
+        <rect x="60" y="305" width="8" height="18" rx="3" fill="#fb7185" opacity="0.55"/>
+        <rect x="290" y="340" width="8" height="18" rx="3" fill="#fb7185" opacity="0.55"/>
+      </g>
+
+      <!-- 우측 푸른 빛의 성채 실루엣 (화합/연결 진영) -->
+      <g id="rightCastleGroup" opacity="0.78">
+        <path d="M1460,900 L1460,340 L1390,300 L1355,180 L1320,300 L1260,330 L1225,160 L1190,330 L1120,370 L1095,260 L1065,390 L980,470 L980,900 Z" fill="url(#azureCastle)"/>
+        <!-- 성채 창문 불빛 -->
+        <rect x="1220" y="245" width="10" height="24" rx="4" fill="#bae6fd" opacity="0.75"/>
+        <rect x="1350" y="260" width="9" height="20" rx="4" fill="#bae6fd" opacity="0.7"/>
+        <rect x="1090" y="315" width="8" height="18" rx="3" fill="#fde68a" opacity="0.7"/>
+      </g>
+
+      <!-- 중앙을 잇는 다리 아치 (퀘스트 진행에 따라 빛으로 연결됨) -->
+      <g id="bridgeVisual" transform="translate(0, 70)">
+        <!-- 좌측 다리 -->
+        <path d="M360,530 Q520,465 685,495 L685,540 Q520,515 360,585 Z" fill="#1e1b2e" stroke="#e8c37d" stroke-opacity="0.35" stroke-width="1.5"/>
+        <!-- 우측 다리 -->
+        <path d="M1080,530 Q920,465 755,495 L755,540 Q920,515 1080,585 Z" fill="#1e293b" stroke="#e8c37d" stroke-opacity="0.35" stroke-width="1.5"/>
+      
+        <path id="bridgeCenterGap" d="M680,495 Q720,488 760,495 L760,540 Q720,533 680,540 Z" fill="url(#bridgeGlow)" stroke="#e0f2fe" stroke-width="1.5" opacity="0.88" />
+
+      </g>
+    </svg>
+  </div>
+
+  <!-- 메인 앱 컨테이너 -->
+  <div id="app" class="relative z-10 min-h-screen flex flex-col justify-between">
+
+    <!-- ==================== 1. 타이틀 화면 (TITLE SCREEN) ==================== -->
+    <section id="titleScreen" class="min-h-screen flex flex-col justify-between p-4 sm:p-6 lg:p-8">
+      <!-- 타이틀 상단 메뉴 바 -->
+      <header class="flex flex-wrap items-center justify-between gap-3">
+        <div class="fantasy-panel px-4 py-2 rounded-xl flex items-center gap-4 text-xs sm:text-sm text-amber-100/90">
+          <button onclick="startGame()" class="hover:text-amber-300 transition flex items-center gap-1.5 font-medium">
+            <i class="fa-solid fa-gamepad text-amber-400"></i> 스토리 모드
+          </button>
+          <span class="text-amber-500/40">|</span>
+          <button onclick="openModal('codexModal')" class="hover:text-amber-300 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-book-open text-amber-400"></i> 도감
+          </button>
+          <span class="text-amber-500/40">|</span>
+          <button onclick="openModal('journalModal')" class="hover:text-amber-300 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-scroll text-amber-400"></i> 기록
+          </button>
+        </div>
+
+        <div class="fantasy-panel px-3 py-2 rounded-xl flex items-center gap-3 text-amber-200">
+          <button id="soundToggleTitle" onclick="toggleAudio()" title="사운드 켜기/끄기" class="w-8 h-8 rounded-lg hover:bg-amber-400/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-volume-xmark"></i>
+          </button>
+          <button onclick="toggleFullscreen()" title="전체화면" class="w-8 h-8 rounded-lg hover:bg-amber-400/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- 타이틀 중앙 로고 -->
+      <div class="text-center my-4 sm:my-6 relative">
+        <p class="font-cinzel text-xs sm:text-sm tracking-[0.35em] text-amber-200/90 uppercase mb-1">
+          Social Issue RPG Adventure
+        </p>
+        <div class="relative inline-block">
+          <h1 class="font-cinzel text-5xl sm:text-7xl lg:text-8xl font-black tracking-wider title-metallic select-none">
+            DIV<span class="text-rose-400" style="-webkit-text-fill-color: #fda4af; text-shadow: 0 0 25px #f43f5e;">I</span>DED
+          </h1>
+          <!-- 중앙 붉은 빛의 균열 라인 -->
+          <div class="w-1 h-16 sm:h-24 bg-gradient-to-b from-transparent via-rose-500 to-transparent mx-auto -mt-14 sm:-mt-20 mb-2 rotate-12 opacity-80 blur-[1px]"></div>
+        </div>
+        <div class="flex items-center justify-center gap-4 mt-1">
+          <span class="h-[1px] w-10 sm:w-20 bg-gradient-to-r from-transparent to-amber-300"></span>
+          <h2 class="font-serif-kr text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-50 tracking-widest drop-shadow">
+            사라진 연결
+          </h2>
+          <span class="h-[1px] w-10 sm:w-20 bg-gradient-to-l from-transparent to-amber-300"></span>
+        </div>
+        <p class="mt-3 text-sm sm:text-base text-amber-100/85 font-light">
+          서로를 이해하던 세계는, 왜 둘로 갈라지게 되었을까?
+        </p>
+      </div>
+
+      <!-- 타이틀 중단: 좌측 갈등 말풍선 & 배너 / 우측 화합 배너 & 5대 조사 퀘스트 -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-auto max-w-7xl w-full mx-auto">
+       
+        <!-- 좌측: 분열의 목소리 (붉은 현수막 & 말풍선) -->
+        <div class="lg:col-span-4 flex flex-col gap-3">
+          <div class="flex items-start gap-3">
+            <!-- 붉은 세로 현수막 -->
+            <div class="hidden sm:flex flex-col items-center justify-center bg-gradient-to-b from-rose-950/90 to-red-900/70 border border-rose-500/50 px-3 py-5 rounded-b-2xl shadow-lg text-rose-200 font-serif-kr font-bold tracking-widest text-sm leading-relaxed">
+              <i class="fa-solid fa-xmark text-rose-400 text-lg mb-2"></i>
+              <span>혐</span><span>오</span>
+              <span class="my-1 text-rose-500/50">·</span>
+              <span>배</span><span>척</span>
+              <span class="my-1 text-rose-500/50">·</span>
+              <span>불</span><span>신</span>
+            </div>
+
+            <!-- 부유하는 혐오/단절 말풍선들 -->
+            <div class="flex-1 space-y-2.5">
+              <div class="animate-float bg-rose-950/75 border border-rose-500/45 backdrop-blur-md px-4 py-2 rounded-xl text-xs sm:text-sm text-rose-100 shadow-lg flex items-center gap-2.5">
+                <i class="fa-solid fa-user-slash text-rose-400"></i>
+                <span>“너랑은 대화할 생각 없어.”</span>
+              </div>
+              <div class="animate-float-delay ml-4 bg-rose-950/70 border border-rose-500/40 backdrop-blur-md px-4 py-2 rounded-xl text-xs sm:text-sm text-rose-100/90 shadow-lg flex items-center gap-2.5">
+                <i class="fa-solid fa-comment-slash text-rose-400"></i>
+                <span>“그런 생각을 하다니…”</span>
+              </div>
+              <div class="animate-float mr-6 bg-rose-950/80 border border-rose-500/50 backdrop-blur-md px-4 py-2 rounded-xl text-xs sm:text-sm text-rose-200 shadow-lg flex items-center gap-2.5">
+                <i class="fa-solid fa-ban text-rose-400"></i>
+                <span>“우리랑 다른 사람은 필요 없어.”</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 조사자 캐릭터 소개 카드 -->
+          <div class="fantasy-panel rounded-2xl p-4 mt-2 flex items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 via-amber-600 to-indigo-950 p-0.5 shrink-0 shadow-lg">
+              <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-amber-300 text-xl">
+                <i class="fa-solid fa-compass"></i>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs text-amber-300 font-semibold tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-star text-[10px]"></i> 조사자
+              </div>
+              <div class="font-serif-kr text-xl sm:text-2xl font-bold text-white">김이성경</div>
+              <p class="text-xs text-slate-300 mt-0.5">사회적 분열의 원인을 탐구하는 특별 조사자</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙 여백 (배경의 빛과 성채가 보이도록 비워둠) -->
+        <div class="hidden lg:flex lg:col-span-4 flex-col items-center justify-center text-center -translate-y-44">
+          <div class="w-28 h-28 rounded-full border border-amber-300/30 bg-amber-400/5 backdrop-blur-sm flex flex-col items-center justify-center animate-pulse-glow">
+            <i class="fa-solid fa-book-sparkles text-3xl text-amber-300 mb-1"></i>
+            <span class="font-cinzel text-[10px] tracking-widest text-amber-200">ARCHIVE</span>
+          </div>
+        </div>
+
+        <!-- 우측: 화합 배너 + 조사 퀘스트 5단계 미리보기 -->
+        <div class="lg:col-span-4 flex flex-col gap-3">
+          <!-- 푸른 현수막 배지 -->
+          <div class="self-end bg-gradient-to-r from-sky-950/85 to-blue-900/75 border border-sky-400/50 px-4 py-1.5 rounded-full text-xs text-sky-200 font-serif-kr tracking-widest shadow">
+            <i class="fa-solid fa-dove text-sky-300 mr-1.5"></i> 대화 · 공감 · 이해 · 존중
+          </div>
+
+          <!-- 조사 퀘스트 패널 -->
+          <div class="fantasy-panel rounded-2xl p-4">
+            <div class="text-center border-b border-amber-400/30 pb-2 mb-3">
+              <span class="font-serif-kr text-sm sm:text-base font-bold text-amber-200 tracking-wider">
+                ✦ 조사 퀘스트 ✦
+              </span>
+            </div>
+            <div class="space-y-2 text-xs sm:text-sm">
+              <div class="flex items-center gap-3 bg-white/5 hover:bg-amber-400/10 border border-amber-300/20 rounded-xl p-2 transition">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="font-cinzel font-bold text-amber-300">01</div>
+                <div>
+                  <div class="font-bold text-amber-50">문제를 마주하다</div>
+                  <div class="text-[11px] text-slate-300">무엇이 문제이며, 누구의 문제인가?</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 bg-white/5 hover:bg-amber-400/10 border border-amber-300/20 rounded-xl p-2 transition">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                  <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="font-cinzel font-bold text-amber-300">02</div>
+                <div>
+                  <div class="font-bold text-amber-50">증거를 수집하다</div>
+                  <div class="text-[11px] text-slate-300">실제로 존재한다는 근거는 무엇인가?</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 bg-white/5 hover:bg-amber-400/10 border border-amber-300/20 rounded-xl p-2 transition">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                  <i class="fa-solid fa-diagram-project"></i>
+                </div>
+                <div class="font-cinzel font-bold text-amber-300">03</div>
+                <div>
+                  <div class="font-bold text-amber-50">연결된 원인을 찾다</div>
+                  <div class="text-[11px] text-slate-300">왜 발생하고 지속되는가?</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 bg-white/5 hover:bg-amber-400/10 border border-amber-300/20 rounded-xl p-2 transition">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                  <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <div class="font-cinzel font-bold text-amber-300">04</div>
+                <div>
+                  <div class="font-bold text-amber-50">가설을 검증하다</div>
+                  <div class="text-[11px] text-slate-300">무엇을 검증했고, 어떤 생각이 달라졌는가?</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 bg-white/5 hover:bg-amber-400/10 border border-amber-300/20 rounded-xl p-2 transition">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                  <i class="fa-solid fa-seedling"></i>
+                </div>
+                <div class="font-cinzel font-bold text-amber-300">05</div>
+                <div>
+                  <div class="font-bold text-amber-50">더 나은 사회를 그리다</div>
+                  <div class="text-[11px] text-slate-300">왜 중요하며, 장기적으로 탐구할 가치가 있는가?</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 타이틀 하단: 게임 시작 버튼 -->
+      <div class="text-center -mt-20 mb-10">
+        <button onclick="startGame()" class="fantasy-btn-gold px-10 sm:px-14 py-3.5 sm:py-4 rounded-2xl font-serif-kr text-lg sm:text-2xl font-bold tracking-widest inline-flex items-center gap-3">
+          <i class="fa-solid fa-play text-amber-200 text-base"></i>
+          <span>게임 시작</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 메인 인게임 화면 (QUEST 01 ~ 05) ==================== -->
+    <section id="gameScreen" class="hidden min-h-screen flex flex-col justify-between p-3 sm:p-5 lg:p-6">
+     
+      <!-- 인게임 상단 HUD 바 -->
+      <header class="fantasy-panel rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+        <!-- 좌측 로고 & 캐릭터 레벨/경험치 -->
+        <div class="flex items-center gap-4">
+          <button onclick="returnToTitle()" class="text-left group">
+            <div class="font-cinzel text-base sm:text-lg font-black tracking-wider text-amber-200 group-hover:text-white transition">
+              DIVIDED
+            </div>
+            <div class="text-[10px] text-amber-300/80 -mt-1">사라진 연결</div>
+          </button>
+
+          <div class="h-7 w-[1px] bg-amber-400/25 hidden sm:block"></div>
+
+          <!-- 조사자 상태창 -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-full border border-amber-300 bg-indigo-950 flex items-center justify-center text-amber-300 text-sm shadow">
+              <i class="fa-solid fa-hat-wizard"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-100">
+                <span class="text-amber-300 font-cinzel" id="hudLevel">Lv.12</span>
+                <span>조사자 김이성경</span>
+              </div>
+              <div class="flex items-center gap-2 mt-0.5">
+                <div class="w-24 sm:w-32 h-1.5 bg-slate-900 rounded-full overflow-hidden border border-amber-400/30">
+                  <div id="hudExpBar" class="h-full bg-gradient-to-r from-sky-400 via-amber-300 to-amber-500 transition-all duration-500" style="width: 35%;"></div>
+                </div>
+                <span id="hudExpText" class="text-[10px] text-amber-200/80 font-cinzel">1,400 / 4,000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙 내비게이션 탭 -->
+        <nav class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+          <button onclick="openModal('inventoryModal')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-amber-400/20 border border-amber-300/25 text-amber-100 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-briefcase text-amber-300"></i>
+            <span>인벤토리</span>
+            <span id="invBadge" class="bg-amber-500 text-slate-950 text-[10px] font-bold px-1.5 rounded-full">1</span>
+          </button>
+          <button onclick="openModal('journalModal')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-amber-400/20 border border-amber-300/25 text-amber-100 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-book-journal-whills text-amber-300"></i>
+            <span>조사 기록</span>
+          </button>
+          <button onclick="openModal('codexModal')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-amber-400/20 border border-amber-300/25 text-amber-100 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-book-open text-amber-300"></i>
+            <span>도감</span>
+          </button>
+        </nav>
+
+        <!-- 우측 사운드 / 전체화면 -->
+        <div class="flex items-center gap-2 text-amber-200">
+          <button id="soundToggleGame" onclick="toggleAudio()" title="사운드 켜기/끄기" class="w-8 h-8 rounded-lg hover:bg-amber-400/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-volume-xmark"></i>
+          </button>
+          <button onclick="toggleFullscreen()" title="전체화면" class="w-8 h-8 rounded-lg hover:bg-amber-400/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- 인게임 메인 그리드: 좌측 퀘스트 사이드바 + 우측 스테이지 콘텐츠 -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 my-4 flex-1 items-stretch max-w-7xl w-full mx-auto">
+       
+        <!-- 좌측 메인 퀘스트 트래커 사이드바 -->
+        <aside class="lg:col-span-3 flex flex-col justify-between gap-3">
+          <div class="fantasy-panel rounded-2xl p-3.5">
+            <div class="text-xs font-cinzel tracking-widest text-amber-300 uppercase border-b border-amber-400/25 pb-2 mb-2.5 flex items-center justify-between">
+              <span>Main Quest</span>
+              <span id="questProgressRatio" class="text-amber-100 font-sans font-bold">1 / 5</span>
+            </div>
+            <ul id="questSidebarList" class="space-y-2 text-xs sm:text-sm">
+              <!-- JS로 동적 렌더링 -->
+            </ul>
+          </div>
+
+          <!-- 조사자 김이성경 현재 독백 카드 -->
+          <div class="fantasy-panel rounded-2xl p-3.5 hidden lg:block">
+            <div class="flex items-center gap-2.5 mb-2">
+              <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-300/60 flex items-center justify-center text-amber-300 text-xs">
+                <i class="fa-solid fa-feather-pointed"></i>
+              </div>
+              <div>
+                <div class="text-[10px] text-amber-300">조사자 노트</div>
+                <div class="font-serif-kr font-bold text-sm text-white">김이성경</div>
+              </div>
+            </div>
+            <p id="investigatorMonologue" class="text-xs text-slate-200 leading-relaxed italic">
+              “이 도시의 사람들은 왜 이렇게 서로를 증오하고, 대화하려 하지 않는 걸까…?”
+            </p>
+          </div>
+        </aside>
+
+        <!-- 중앙/우측 동적 퀘스트 스테이지 -->
+        <main id="questStageContainer" class="lg:col-span-9 flex flex-col justify-between gap-4">
+          <!-- JS로 현재 선택된 Quest 01 ~ 05 화면이 렌더링됨 -->
+        </main>
+
+      </div>
+
+      <!-- 하단 안내 푸터 -->
+      <footer class="text-center text-[11px] text-amber-200/50">
+        DIVIDED: 사라진 연결 — 사회 문제 탐구 인터랙티브 비주얼 노벨 RPG
+      </footer>
+    </section>
+
+  </div>
+
+  <!-- ==================== 모달 창 (인벤토리 / 조사 기록 / 도감 / CLD 확대) ==================== -->
+  <!-- 1. 인벤토리 모달 -->
+  <div id="inventoryModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="fantasy-panel rounded-2xl max-w-lg w-full p-6">
+      <div class="flex items-center justify-between border-b border-amber-400/30 pb-3 mb-4">
+        <h3 class="font-serif-kr text-xl font-bold text-amber-200 flex items-center gap-2">
+          <i class="fa-solid fa-briefcase text-amber-400"></i> 조사자 인벤토리
+        </h3>
+        <button onclick="closeModal('inventoryModal')" class="text-slate-300 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="inventoryList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-1">
+        <!-- JS 동적 렌더링 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 조사 기록 (Q&A 일지) 모달 -->
+  <div id="journalModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="fantasy-panel rounded-2xl max-w-2xl w-full p-6">
+      <div class="flex items-center justify-between border-b border-amber-400/30 pb-3 mb-4">
+        <h3 class="font-serif-kr text-xl font-bold text-amber-200 flex items-center gap-2">
+          <i class="fa-solid fa-scroll text-amber-400"></i> 조사 기록부 (탐구 질문과 답변)
+        </h3>
+        <button onclick="closeModal('journalModal')" class="text-slate-300 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="journalList" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+        <!-- JS 동적 렌더링 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 학술 & 개념 도감 모달 -->
+  <div id="codexModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="fantasy-panel rounded-2xl max-w-2xl w-full p-6">
+      <div class="flex items-center justify-between border-b border-amber-400/30 pb-3 mb-4">
+        <h3 class="font-serif-kr text-xl font-bold text-amber-200 flex items-center gap-2">
+          <i class="fa-solid fa-book-open text-amber-400"></i> 고대 도서관 문헌 도감
+        </h3>
+        <button onclick="closeModal('codexModal')" class="text-slate-300 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="space-y-3 max-h-96 overflow-y-auto pr-1 text-sm">
+        <div class="bg-white/5 border border-amber-300/25 rounded-xl p-3.5">
+          <div class="font-bold text-amber-300">1. 접촉 가설 (Contact Hypothesis) — Pettigrew & Tropp (2006)</div>
+          <p class="text-slate-200 text-xs mt-1 leading-relaxed">서로 다른 집단 구성원 간의 긍정적이고 직접적인 접촉이 증가할수록 집단 간 편견과 적대감이 유의미하게 감소한다는 사회심리학 이론.</p>
+        </div>
+        <div class="bg-white/5 border border-amber-300/25 rounded-xl p-3.5">
+          <div class="font-bold text-amber-300">2. 에코 챔버 & 선택적 노출 — Bakshy et al. (2015)</div>
+          <p class="text-slate-200 text-xs mt-1 leading-relaxed">소셜미디어 알고리즘과 개인의 선택적 정보 소비로 인해 자신의 기존 신념과 일치하는 정보만 반복적으로 접하며 의견 양극화가 심화되는 현상.</p>
+        </div>
+        <div class="bg-white/5 border border-amber-300/25 rounded-xl p-3.5">
+          <div class="font-bold text-amber-300">3. 온라인 혐오 표현과 집단 갈등 — Sutton (2020)</div>
+          <p class="text-slate-200 text-xs mt-1 leading-relaxed">디지털 공간에서 타 집단을 향한 조롱과 혐오 표현이 확산되면서 내집단 결속과 외집단 배척이 강화되는 메커니즘.</p>
+        </div>
+        <div class="bg-white/5 border border-amber-300/25 rounded-xl p-3.5">
+          <div class="font-bold text-amber-300">4. 사회적 신뢰 지수 — Edelman Trust Barometer (2024)</div>
+          <p class="text-slate-200 text-xs mt-1 leading-relaxed">다른 배경이나 의견을 가진 타인에 대한 사회적 신뢰가 낮아질수록 공동체 협력과 갈등 해결 능력이 약화됨을 보여주는 글로벌 지표.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 알림 메시지 -->
+  <div id="toastBox" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300">
+    <div class="fantasy-panel px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-amber-100 flex items-center gap-2 shadow-2xl border-amber-300">
+      <i class="fa-solid fa-sparkles text-amber-300"></i>
+      <span id="toastText">단서를 획득했습니다!</span>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. 사운드 이펙트 엔진 (Web Audio API - 외부 파일 없이 판타지 음향 합성)
+       ========================================================================= */
+    let audioCtx = null;
+    let isSoundEnabled = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudio() {
+      isSoundEnabled = !isSoundEnabled;
+      if (isSoundEnabled) {
+        initAudio();
+        playChime(523.25, 0.25); // C5
+        showToast('판타지 효과음이 활성화되었습니다.');
+      }
+      const icons = document.querySelectorAll('#soundToggleTitle i, #soundToggleGame i');
+      icons.forEach(icon => {
+        icon.className = isSoundEnabled ? 'fa-solid fa-volume-high text-amber-300' : 'fa-solid fa-volume-xmark';
+      });
+    }
+
+    function playChime(freq = 587.33, duration = 0.3) {
+      if (!isSoundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + duration);
+
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playSuccessFanfare() {
+      if (!isSoundEnabled) return;
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((n, idx) => {
+        setTimeout(() => playChime(n, 0.35), idx * 90);
+      });
+    }
+
+    /* =========================================================================
+       2. 파티클 시스템 (HTML5 Canvas - 부유하는 금빛 불티 & 황혼의 빛가루)
+       ========================================================================= */
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.4 + 0.6;
+        this.speedY = -(Math.random() * 0.45 + 0.12);
+        this.speedX = (Math.random() - 0.5) * 0.35;
+        this.alpha = Math.random() * 0.65 + 0.15;
+        // 왼쪽은 붉은 불티, 오른쪽은 금빛/푸른 빛가루
+        if (this.x < canvas.width * 0.45) {
+          this.color = Math.random() > 0.35 ? '251, 113, 133' : '253, 224, 71';
+        } else {
+          this.color = Math.random() > 0.35 ? '253, 224, 71' : '125, 211, 252';
+        }
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+          this.reset();
+          this.y = canvas.height + 10;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `rgba(${this.color}, 0.8)`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 65; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* =========================================================================
+       3. 게임 데이터 & 상태 관리 (시안 6장의 모든 텍스트와 퀘스트 로직)
+       ========================================================================= */
+    const QUEST_DATA = [
+      {
+        id: 1,
+        code: 'QUEST 01',
+        shortTitle: '문제를 마주하다',
+        title: '갈라진 도시',
+        subtitle: '두 개로 나뉜 도시, 무엇이 사람들을 갈라놓았을까?',
+        bgClass: 'bg-stage-q1',
+        monologue: '“이 도시의 사람들은 왜 이렇게 서로를 증오하고, 대화하려 하지 않는 걸까…? 이것이 바로 \'사회적 분열\'일까?”',
+        question: '사회적 분열이란 무엇인가?',
+        answer: '사회 구성원들이 서로 다른 집단으로 나뉘어 대화와 공감은 줄고 갈등과 적대감이 커지는 현상이다.',
+        rewardItem: {
+          name: '끊어진 다리의 기록 조각',
+          icon: 'fa-bridge-water',
+          desc: '갈라진 도시의 붉은 진영과 푸른 진영 사이의 단절을 기록한 첫 번째 단서.'
+        }
+      },
+      {
+        id: 2,
+        code: 'QUEST 02',
+        shortTitle: '증거를 수집하다',
+        title: '증거를 수집하다',
+        subtitle: '고대 도서관에 보관된 기록과 연구 자료를 조사하여, 사회적 분열이 실제로 존재한다는 증거를 수집하자.',
+        bgClass: 'bg-stage-q2',
+        monologue: '“이제, 실제로 사회적 분열이 나타나고 있다는 객관적인 증거들을 찾아보자…”',
+        question: '사회적 분열을 보여주는 실제 증거는?',
+        answer: '집단 간 접촉 감소, 양극화된 정보 소비, 혐오 표현 증가, 서로 다른 집단에 대한 불신이 사회적 분열과 관련된 증거로 나타난다.',
+        rewardItem: {
+          name: '고대 도서관의 학술 인장',
+          icon: 'fa-book-atlas',
+          desc: '4가지 실증 연구(접촉 가설, 정보 소비, 온라인 혐오, 신뢰 지표)를 집대성한 증표.'
+        }
+      },
+      {
+        id: 3,
+        code: 'QUEST 03',
+        shortTitle: '연결된 원인을 찾다',
+        title: '반복되는 갈등',
+        subtitle: '갈등의 미궁 속에서, 사회적 분열이 계속되는 구조를 밝혀내라.',
+        bgClass: 'bg-stage-q3',
+        monologue: '“단순한 의견 차이가 아니었어. 혐오 표현과 확증편향, 공감 부족이 서로를 강화하는 악순환의 고리를 만들고 있어!”',
+        question: '사회적 분열은 왜 지속되는가?',
+        answer:  '혐오 표현이 집단 간 적대감을 키우고, 확증편향과 공감 부족이 단절을 깊게 만들면서 분열을 강화시키기 때문이다.',
+
+        rewardItem: {
+          name: '피드백 루프 수정구',
+          icon: 'fa-circle-nodes',
+          desc: '사회적 분열이 스스로를 강화하며 지속되는 인과순환구조(CLD)를 비추는 아티팩트.'
+        }
+      },
+      {
+        id: 4,
+        code: 'QUEST 04',
+        shortTitle: '가설을 검증하다',
+        title: '사건 재구성',
+        subtitle: '시간의 방에서, 지금까지의 조사 결과를 바탕으로 초기의 가설을 다시 검토하라.',
+        bgClass: 'bg-stage-q4',
+        monologue: '“처음엔 단순히 의견과 가치관이 달라서 분열한다고 생각했지만, 그 이면에는 복합적인 구조가 연결되어 있었어.”',
+        question: '조사 결과 무엇을 검증했는가?',
+        answer: '사회적 분열은 개인의 의견 차이만으로 생기는 것이 아니라 정보 환경, 집단 정체성, 확증편향, 혐오 표현, 공감 부족이 서로 연결되어 심화된다는 점을 검증했다.',
+        rewardItem: {
+          name: '진실의 모래시계',
+          icon: 'fa-hourglass-half',
+          desc: '초기 가설의 한계를 넘어 입체적인 인과관계를 검증해낸 조사자의 증표.'
+        }
+      },
+      {
+        id: 5,
+        code: 'QUEST 05',
+        shortTitle: '더 나은 사회를 그리다',
+        title: '최종 보고',
+        subtitle: '분열된 도시는 다시 연결될 수 있을까?',
+        bgClass: 'bg-stage-q5',
+        monologue: '“모든 단서가 하나로 이어졌어. 이제 이 기록을 바탕으로 다시 연결될 내일을 보고할 시간이야.”',
+        question: '사회적 분열은 왜 중요한 문제인가?',
+        answer: '사회적 분열은 사회적 신뢰와 협력을 약화시키고 갈등을 심화하므로, 서로 다른 집단의 목소리를 이해하고 대화와 공감을 회복하는 노력이 필요하다.',
+        rewardItem: {
+          name: '연결의 등불 (완성)',
+          icon: 'fa-sun',
+          desc: '분열된 두 진영 사이에 다시 대화와 공감의 다리를 놓는 희망의 빛.'
+        }
+      }
+    ];
+
+    const EVIDENCE_CARDS = [
+      {
+        id: 'ev1',
+        title: '집단 간 접촉 감소',
+        icon: 'fa-people-arrows',
+        desc: '다른 집단과의 직접 접촉이 줄어들수록 편견과 적대감이 커짐.',
+        source: 'Pettigrew & Tropp (2006) 접촉 가설 연구'
+      },
+      {
+        id: 'ev2',
+        title: '양극화된 정보 소비',
+        icon: 'fa-filter-circle-xmark',
+        desc: '자신의 신념과 일치하는 정보에만 노출되어 생각의 격차가 심화됨.',
+        source: 'Bakshy et al. (2015) 소셜미디어 정보 노출 연구'
+      },
+      {
+        id: 'ev3',
+        title: '혐오 표현 증가',
+        icon: 'fa-comment-dots',
+        desc: '온라인 혐오 표현이 늘수록 집단 간 적대감과 분열이 강화됨.',
+        source: 'Sutton (2020) 온라인 혐오 연구'
+      },
+      {
+        id: 'ev4',
+        title: '서로 다른 집단에 대한 불신',
+        icon: 'fa-link-slash',
+        desc: '다른 집단에 대한 신뢰가 낮을수록 사회적 거리감과 분열이 심화됨.',
+        source: 'Edelman Trust Barometer (2024)'
+      }
+    ];
+
+    const CLD_NODES = [
+  {
+    id: 'hate',
+    title: '혐오 표현',
+    icon: 'fa-fire-flame-curved',
+    color: 'rose',
+    desc: '다른 집단을 비난하고 배척하며, 적대감을 키운다.'
+  },
+  {
+    id: 'bias',
+    title: '확증편향',
+    icon: 'fa-eye',
+    color: 'amber',
+    desc: '기존 믿음에 맞는 정보만 받아들이고, 다른 의견은 배제한다.'
+  },
+  {
+    id: 'empathy',
+    title: '공감 부족',
+    icon: 'fa-heart-crack',
+    color: 'sky',
+    desc: '상대의 입장을 이해하고 존중하려는 태도가 약해져, 대화와 이해가 어려워진다.'
+  }
+];
+
+
+    const HYPOTHESIS_FACTORS = [
+      { title: '정보 환경의 영향', sub: '편향된 정보, 알고리즘' },
+      { title: '집단 정체성의 강화', sub: '우리 집단 vs. 타 집단' },
+      { title: '확증편향', sub: '자신의 신념을 뒷받침하는 정보만 수용' },
+      { title: '혐오 표현의 확산', sub: '비난, 조롱, 배척' },
+      { title: '공감 부족', sub: '타인의 관점을 이해하려는 노력 부족' }
+    ];
+
+    // 플레이어 진행 상태
+    let gameState = {
+      currentQuest: 1,
+      unlockedQuest: 1,
+      completedQuests: [],
+      exp: 1400,
+      // Quest 01 상태
+      q1Tasks: [false, false, false],
+      // Quest 02 상태
+      q2Collected: [false, false, false, false],
+      // Quest 03 상태
+      q3Inspected: [false, false, false],
+      q3ActiveNode: 0,
+      // Quest 04 상태
+      q4VerifiedItems: [false, false, false, false, false],
+      q4Completed: false,
+      // Quest 05 선택된 보석 미리보기
+      q5SelectedGem: 5,
+      inventory: [
+        {
+          name: '조사자의 황금 등불',
+          icon: 'fa-lightbulb',
+          desc: '어두운 갈등의 미궁 속에서도 진실의 단서를 비추는 기본 장비.'
+        }
+      ]
+    };
+
+    /* =========================================================================
+       4. 화면 전환 및 UI 렌더링 함수
+       ========================================================================= */
+    function startGame() {
+      playChime(659.25, 0.35);
+      document.getElementById('titleScreen').classList.add('hidden');
+      document.getElementById('gameScreen').classList.remove('hidden');
+      renderQuest(gameState.currentQuest);
+    }
+
+    function returnToTitle() {
+      playChime(440, 0.25);
+      document.getElementById('gameScreen').classList.add('hidden');
+      document.getElementById('titleScreen').classList.remove('hidden');
+      document.body.className = 'bg-stage-title transition-colors duration-1000';
+      document.getElementById('bridgeCenterGap').setAttribute('opacity', '0.25');
+    }
+
+    function completeQuest(questId) {
+      if (!gameState.completedQuests.includes(questId)) {
+        gameState.completedQuests.push(questId);
+        const qObj = QUEST_DATA.find(q => q.id === questId);
+        if (qObj && qObj.rewardItem) {
+          gameState.inventory.push(qObj.rewardItem);
+        }
+        gameState.exp = Math.min(4000, gameState.exp + 520);
+        playSuccessFanfare();
+        showToast(`${qObj.code} 완료! 새 단서 [${qObj.rewardItem.name}] 획득`);
+      }
+      if (questId < 5 && gameState.unlockedQuest <= questId) {
+        gameState.unlockedQuest = questId + 1;
+      }
+      updateHUD();
+      renderSidebar();
+    }
+
+    function goToQuest(questId) {
+      if (questId > gameState.unlockedQuest) {
+        showToast('이전 퀘스트를 먼저 완료해주세요!');
+        return;
+      }
+      playChime(587.33, 0.25);
+      gameState.currentQuest = questId;
+      renderQuest(questId);
+    }
+
+    function updateHUD() {
+      const pct = Math.round((gameState.exp / 4000) * 100);
+      document.getElementById('hudExpBar').style.width = `${pct}%`;
+      document.getElementById('hudExpText').textContent = `${gameState.exp.toLocaleString()} / 4,000`;
+      document.getElementById('invBadge').textContent = gameState.inventory.length;
+      document.getElementById('questProgressRatio').textContent = `${gameState.completedQuests.length} / 5`;
+
+      // Quest 05 도달 시 다리 중앙 빛 활성화
+      const bridgeGap = document.getElementById('bridgeCenterGap');
+      if (gameState.currentQuest === 5 || gameState.completedQuests.includes(5)) {
+        bridgeGap.setAttribute('opacity', '0.95');
+      } else {
+        bridgeGap.setAttribute('opacity', '0.25');
+      }
+    }
+
+    function renderSidebar() {
+      const listEl = document.getElementById('questSidebarList');
+      listEl.innerHTML = QUEST_DATA.map(q => {
+        const isCompleted = gameState.completedQuests.includes(q.id);
+        const isCurrent = gameState.currentQuest === q.id;
+        const isUnlocked = q.id <= gameState.unlockedQuest;
+
+        let iconHtml = `<i class="fa-solid fa-lock text-slate-500"></i>`;
+        if (isCompleted) iconHtml = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+        else if (isCurrent) iconHtml = `<i class="fa-solid fa-compass text-amber-300 animate-pulse"></i>`;
+        else if (isUnlocked) iconHtml = `<i class="fa-regular fa-circle text-amber-300/70"></i>`;
+
+        const activeStyle = isCurrent
+          ? 'bg-amber-500/20 border-amber-300 text-white shadow-md'
+          : isUnlocked
+          ? 'bg-white/5 border-amber-300/20 text-slate-200 hover:bg-white/10 cursor-pointer'
+          : 'bg-black/25 border-white/5 text-slate-500 cursor-not-allowed';
+
+        return `
+          <li onclick="goToQuest(${q.id})" class="border rounded-xl p-2.5 transition flex items-center justify-between gap-2 ${activeStyle}">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="shrink-0">${iconHtml}</span>
+              <div class="truncate">
+                <div class="font-cinzel text-[10px] text-amber-300/90">${q.code}</div>
+                <div class="font-medium truncate">${q.shortTitle}</div>
+              </div>
+            </div>
+            ${isCompleted ? '<span class="text-[10px] text-emerald-300 font-bold shrink-0">완료</span>' : ''}
+          </li>
+        `;
+      }).join('');
+    }
+
+    function renderQuest(questId) {
+      const q = QUEST_DATA.find(item => item.id === questId);
+      if (!q) return;
+
+      document.body.className = `${q.bgClass} transition-colors duration-1000`;
+      document.getElementById('investigatorMonologue').textContent = q.monologue;
+      updateHUD();
+      renderSidebar();
+
+      const stage = document.getElementById('questStageContainer');
+      if (questId === 1) stage.innerHTML = buildQuest1HTML(q);
+      else if (questId === 2) stage.innerHTML = buildQuest2HTML(q);
+      else if (questId === 3) stage.innerHTML = buildQuest3HTML(q);
+      else if (questId === 4) stage.innerHTML = buildQuest4HTML(q);
+      else if (questId === 5) stage.innerHTML = buildQuest5HTML(q);
+    }
+
+    /* ==================== QUEST 01 HTML & 액션 ==================== */
+    function buildQuest1HTML(q) {
+      const doneCount = gameState.q1Tasks.filter(Boolean).length;
+      const allDone = doneCount === 3;
+
+      const taskLabels = [
+        { label: '시민들의 이야기 듣기', btnText: '시민들을 더 조사한다.', icon: 'fa-comments' },
+        { label: '갈등의 현장 조사하기', btnText: '갈등의 현장을 살핀다.', icon: 'fa-fire' },
+        { label: '분열의 원인 단서 수집하기', btnText: '다른 단서를 찾아본다.', icon: 'fa-magnifying-glass' }
+      ];
+
+      return `
+        <!-- 상단 퀘스트 헤더 -->
+        <div class="text-center">
+          <div class="inline-flex items-center gap-2 text-xs font-cinzel tracking-[0.25em] text-amber-300">
+            <span>✦</span><span>${q.code}</span><span>✦</span>
+          </div>
+          <h2 class="font-serif-kr text-3xl sm:text-4xl font-bold text-white mt-1 drop-shadow-lg">${q.title}</h2>
+          <p class="text-xs sm:text-sm text-amber-100/80 mt-1">${q.subtitle}</p>
+        </div>
+
+        <!-- 중단 좌우 분할: 좌측 조사 선택지 / 우측 현재 퀘스트 체크리스트 -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <!-- 좌측 대화 및 조사 선택지 -->
+          <div class="md:col-span-7 fantasy-panel rounded-2xl p-4 sm:p-5 space-y-3">
+            <div class="flex items-center gap-2 text-xs text-amber-300 font-bold">
+              <span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40">조사자 김이성경</span>
+              <span class="text-slate-400">현장 탐문</span>
+            </div>
+            <p class="text-sm sm:text-base text-amber-50 leading-relaxed font-serif-kr">
+              “이 도시의 사람들은 왜 이렇게 서로를 증오하고, 대화하려 하지 않는 걸까…? 이것이 바로 <span class="text-amber-300 font-bold">'사회적 분열'</span>일까?”
+            </p>
+            <div class="space-y-2 pt-2">
+              ${taskLabels.map((t, idx) => `
+                <button onclick="doQuest1Task(${idx})" class="w-full fantasy-choice-btn ${gameState.q1Tasks[idx] ? 'completed' : ''} px-4 py-2.5 rounded-xl flex items-center justify-between text-left text-xs sm:text-sm">
+                  <span class="flex items-center gap-2.5">
+                    <i class="fa-solid ${t.icon} ${gameState.q1Tasks[idx] ? 'text-emerald-300' : 'text-amber-300'}"></i>
+                    <span class="font-medium text-white">${t.btnText}</span>
+                  </span>
+                  <span class="text-xs ${gameState.q1Tasks[idx] ? 'text-emerald-300 font-bold' : 'text-amber-200/70'}">
+                    ${gameState.q1Tasks[idx] ? '조사 완료 ✔' : '클릭하여 조사'}
+                  </span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- 우측 미니 퀘스트 목표 창 -->
+          <div class="md:col-span-5 fantasy-panel rounded-2xl p-4 sm:p-5">
+            <div class="flex items-center justify-between border-b border-amber-400/30 pb-2 mb-3">
+              <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-diamond text-[10px]"></i> 현재 퀘스트
+              </span>
+              <span class="font-cinzel text-xs font-bold ${allDone ? 'text-emerald-300' : 'text-amber-200'}">(${doneCount}/3)</span>
+            </div>
+            <div class="text-sm font-bold text-white mb-3">사회적 분열의 실체를 조사하라</div>
+            <ul class="space-y-2.5 text-xs sm:text-sm">
+              ${taskLabels.map((t, idx) => `
+                <li class="flex items-center justify-between ${gameState.q1Tasks[idx] ? 'text-emerald-300 line-through opacity-85' : 'text-slate-200'}">
+                  <span>${t.label}</span>
+                  <i class="fa-regular ${gameState.q1Tasks[idx] ? 'fa-square-check text-emerald-400' : 'fa-square text-amber-400/60'}"></i>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <!-- 하단 질문 & 답변(Q&A) 핵심 도출 패널 -->
+        <div class="fantasy-panel rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-2.5 flex-1">
+            <div class="flex items-start gap-3">
+              <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-bold shrink-0">
+                <i class="fa-solid fa-circle-question mr-1"></i>질문
+              </span>
+              <div class="font-serif-kr text-base sm:text-lg font-bold text-amber-100">${q.question}</div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-400/40 text-sky-200 text-xs font-bold shrink-0">
+                <i class="fa-solid fa-book-open mr-1"></i>답변
+              </span>
+              <p class="text-xs sm:text-sm text-slate-100 leading-relaxed">
+                ${allDone ? q.answer : '<span class="text-amber-300/80 italic">위의 현장 조사 선택지 3가지를 모두 클릭하면 핵심 답변이 해금됩니다.</span>'}
+              </p>
+            </div>
+          </div>
+
+          <button onclick="goToQuest(2)" ${allDone ? '' : 'disabled'} class="fantasy-btn-gold px-6 py-3 rounded-xl font-serif-kr font-bold text-sm sm:text-base shrink-0 self-end md:self-center flex items-center gap-2">
+            <span>다음으로</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function doQuest1Task(idx) {
+      if (!gameState.q1Tasks[idx]) {
+        gameState.q1Tasks[idx] = true;
+        playChime(587.33 + idx * 110, 0.25);
+        const notes = [
+          '시민 인터뷰: “저쪽 다리 너머 사람들과는 말도 섞기 싫어요.”',
+          '갈등 현장: 붉은 깃발과 푸른 깃발 사이에 깊은 불신의 벽이 세워져 있다.',
+          '단서 발견: 서로 다른 집단으로 나뉘어 공감이 사라진 흔적을 기록했다.'
+        ];
+        showToast(notes[idx]);
+      }
+      if (gameState.q1Tasks.every(Boolean)) {
+        completeQuest(1);
+      }
+      renderQuest(1);
+    }
+
+    /* ==================== QUEST 02 HTML & 액션 ==================== */
+    function buildQuest2HTML(q) {
+      const collectedCount = gameState.q2Collected.filter(Boolean).length;
+      const allCollected = collectedCount === 4;
+
+      return `
+        <!-- 상단 헤더 & 퀘스트 목표 -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div class="text-xs font-cinzel tracking-widest text-amber-300">${q.code} · 고대 도서관</div>
+            <h2 class="font-serif-kr text-2xl sm:text-3xl font-bold text-white">${q.title}</h2>
+            <p class="text-xs text-slate-300 mt-0.5">${q.subtitle}</p>
+          </div>
+          <div class="fantasy-panel px-4 py-2.5 rounded-xl shrink-0">
+            <div class="text-[11px] text-amber-300 font-bold"><i class="fa-solid fa-feather mr-1"></i> 퀘스트 목표</div>
+            <div class="text-xs sm:text-sm text-white font-medium mt-0.5">
+              사회적 분열을 입증하는 증거 4개 수집하기
+              <span class="font-cinzel font-bold ${allCollected ? 'text-emerald-300' : 'text-amber-300'}">(${collectedCount}/4)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4장의 증거 수집 인터랙티브 카드 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          ${EVIDENCE_CARDS.map((card, idx) => {
+            const isCollected = gameState.q2Collected[idx];
+            return `
+              <div onclick="collectEvidence(${idx})" class="fantasy-panel rounded-2xl p-4 flex flex-col justify-between cursor-pointer transition-all duration-300 ${isCollected ? 'border-amber-300 bg-amber-500/15 shadow-[0_0_25px_rgba(232,195,125,0.3)] -translate-y-1' : 'hover:border-amber-300/70 hover:-translate-y-1'}">
+                <div>
+                  <div class="flex items-center justify-between mb-2.5">
+                    <div class="w-9 h-9 rounded-xl ${isCollected ? 'bg-amber-400 text-slate-950' : 'bg-amber-500/20 text-amber-300'} flex items-center justify-center text-base transition">
+                      <i class="fa-solid ${card.icon}"></i>
+                    </div>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${isCollected ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' : 'bg-white/10 text-amber-200'}">
+                      ${isCollected ? '수집 완료 ✔' : '클릭하여 열람'}
+                    </span>
+                  </div>
+                  <h3 class="font-serif-kr font-bold text-base text-amber-100 mb-2">${card.title}</h3>
+                  <p class="text-xs text-slate-200 leading-relaxed mb-3">${card.desc}</p>
+                </div>
+                <div class="pt-2 border-t border-amber-300/20 text-[11px] text-amber-300/90 font-medium">
+                  ▷ ${card.source}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- 하단 질문 & 답변 + 이전/다음 버튼 -->
+        <div class="fantasy-panel rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-2 flex-1">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-bold shrink-0">질문</span>
+              <span class="font-serif-kr font-bold text-sm sm:text-base text-amber-100">${q.question}</span>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="px-2.5 py-0.5 rounded bg-sky-500/20 border border-sky-400/40 text-sky-200 text-xs font-bold shrink-0">답변</span>
+              <p class="text-xs sm:text-sm text-slate-100 leading-relaxed">
+                ${allCollected ? q.answer : '<span class="text-amber-300/80 italic">위의 4가지 학술 증거 카드를 모두 클릭해 조사하면 답변이 완성됩니다.</span>'}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 shrink-0 self-end md:self-center">
+            <button onclick="goToQuest(1)" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-amber-300/30 text-xs sm:text-sm text-amber-100 transition">
+              ◀ 이전 퀘스트
+            </button>
+            <button onclick="goToQuest(3)" ${allCollected ? '' : 'disabled'} class="fantasy-btn-gold px-5 py-2.5 rounded-xl font-serif-kr font-bold text-xs sm:text-sm flex items-center gap-1.5">
+              <span>다음 퀘스트</span>
+              <i class="fa-solid fa-play text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function collectEvidence(idx) {
+      if (!gameState.q2Collected[idx]) {
+        gameState.q2Collected[idx] = true;
+        playChime(659.25 + idx * 80, 0.25);
+        showToast(`증거 확보: [${EVIDENCE_CARDS[idx].title}]`);
+      }
+      if (gameState.q2Collected.every(Boolean)) {
+        completeQuest(2);
+      }
+      renderQuest(2);
+    }
+
+    /* ==================== QUEST 03 HTML & 액션 (피드백 루프 CLD) ==================== */
+    function buildQuest3HTML(q) {
+      const inspectedCount = gameState.q3Inspected.filter(Boolean).length;
+      const allInspected = inspectedCount === 3;
+      const activeNode = CLD_NODES[gameState.q3ActiveNode];
+
+      return `
+        <!-- 상단 헤더 -->
+        <div class="text-center">
+          <div class="text-xs font-cinzel tracking-widest text-amber-300">${q.code} · 갈등의 미궁</div>
+          <h2 class="font-serif-kr text-2xl sm:text-4xl font-bold text-white mt-0.5">${q.title}</h2>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">${q.subtitle}</p>
+        </div>
+
+        <!-- 중앙 피드백 루프 (CLD) 인터랙티브 다이어그램 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+          <!-- 인과순환 다이어그램 영역 -->
+          <div class="lg:col-span-7 fantasy-panel rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+            <div class="text-xs text-amber-300 font-bold mb-3 flex items-center justify-between">
+              <span><i class="fa-solid fa-rotate mr-1.5"></i>사회적 분열의 피드백 루프 (각 노드를 클릭하여 탐색)</span>
+              <span class="font-cinzel">${inspectedCount}/3 탐색</span>
+            </div>
+
+            <!-- 3개 순환 노드 배치 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
+              ${CLD_NODES.map((node, idx) => {
+                const isSelected = gameState.q3ActiveNode === idx;
+                const isVisited = gameState.q3Inspected[idx];
+                const borderColors = {
+                  amber: isSelected ? 'border-amber-300 bg-amber-500/25 shadow-[0_0_20px_rgba(251,191,36,0.4)]' : 'border-amber-400/40 bg-amber-950/30',
+                  rose: isSelected ? 'border-rose-400 bg-rose-500/25 shadow-[0_0_20px_rgba(244,63,94,0.4)]' : 'border-rose-400/40 bg-rose-950/30',
+                  sky: isSelected ? 'border-sky-400 bg-sky-500/25 shadow-[0_0_20px_rgba(56,189,248,0.4)]' : 'border-sky-400/40 bg-sky-950/30'
+                };
+                return `
+                  <div onclick="inspectCldNode(${idx})" class="border-2 rounded-2xl p-3.5 cursor-pointer transition-all duration-300 text-center flex flex-col items-center justify-between ${borderColors[node.color]}">
+                    <div class="w-11 h-11 rounded-full bg-black/40 border border-white/20 flex items-center justify-center text-lg text-amber-200 mb-2">
+                      <i class="fa-solid ${node.icon}"></i>
+                    </div>
+                    <div class="font-serif-kr font-bold text-base text-white">${node.title}</div>
+                    <div class="text-[11px] text-slate-200 mt-1.5 leading-snug">${node.desc}</div>
+                    <div class="mt-2.5 text-[10px] font-bold ${isVisited ? 'text-emerald-300' : 'text-amber-300'}">
+                      ${isVisited ? '분석 완료 ✔' : '클릭하여 분석'}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- 순환 강화 구조 배지 -->
+            <div class="mt-4 bg-rose-950/50 border border-rose-500/40 rounded-xl p-2.5 text-center text-xs text-rose-100 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-arrows-spin text-rose-400 animate-spin-slow"></i>
+              <span><strong>지속·강화 구조 (R1):</strong> 확증편향 ➔ 혐오 표현 ➔ 공감 부족 ➔ 다시 확증편향 심화</span>
+            </div>
+          </div>
+
+          <!-- 우측 선택된 노드 심층 해설 -->
+          <div class="lg:col-span-5 fantasy-panel rounded-2xl p-5 flex flex-col justify-between h-full">
+            <div>
+              <div class="text-xs font-cinzel text-amber-300 tracking-wider mb-1">SELECTED NODE ANALYSIS</div>
+              <h3 class="font-serif-kr text-xl font-bold text-white flex items-center gap-2">
+                <i class="fa-solid ${activeNode.icon} text-amber-300"></i>
+                <span>${activeNode.title}</span>
+              </h3>
+              <p class="text-sm text-amber-50/90 mt-3 leading-relaxed bg-white/5 border border-amber-300/20 rounded-xl p-3.5">
+                ${activeNode.desc}
+              </p>
+            </div>
+            <div class="mt-4 text-xs text-slate-300 leading-relaxed">
+              <i class="fa-solid fa-lightbulb text-amber-300 mr-1"></i>
+              세 가지 요인이 톱니바퀴처럼 맞물려 돌아가기 때문에, 한 번 시작된 사회적 분열은 쉽게 멈추지 않고 더욱 견고해집니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- 하단 질문 & 답변 패널 -->
+        <div class="fantasy-panel rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-2 flex-1">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-bold shrink-0">질문</span>
+              <span class="font-serif-kr font-bold text-sm sm:text-base text-amber-100">${q.question}</span>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="px-2.5 py-0.5 rounded bg-sky-500/20 border border-sky-400/40 text-sky-200 text-xs font-bold shrink-0">답변</span>
+              <p class="text-xs sm:text-sm text-slate-100 leading-relaxed">
+                ${allInspected ? q.answer : '<span class="text-amber-300/80 italic">피드백 루프의 3가지 요소(확증편향, 혐오 표현, 공감 부족)를 모두 클릭하여 확인하세요.</span>'}
+              </p>
+            </div>
+          </div>
+
+          <button onclick="goToQuest(4)" ${allInspected ? '' : 'disabled'} class="fantasy-btn-gold px-6 py-3 rounded-xl font-serif-kr font-bold text-sm shrink-0 self-end md:self-center flex items-center gap-2">
+            <span>가설 검증하러 가기</span>
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function inspectCldNode(idx) {
+      gameState.q3ActiveNode = idx;
+      if (!gameState.q3Inspected[idx]) {
+        gameState.q3Inspected[idx] = true;
+        playChime(620 + idx * 90, 0.25);
+        showToast(`[${CLD_NODES[idx].title}] 순환 고리 분석 완료`);
+      } else {
+        playChime(520, 0.15);
+      }
+      if (gameState.q3Inspected.every(Boolean)) {
+        completeQuest(3);
+      }
+      renderQuest(3);
+    }
+
+    /* ==================== QUEST 04 HTML & 액션 (가설 검증) ==================== */
+    function buildQuest4HTML(q) {
+      const checkedCount = gameState.q4VerifiedItems.filter(Boolean).length;
+      const allChecked = checkedCount === 5;
+
+      return `
+        <!-- 상단 헤더 -->
+        <div class="text-center">
+          <div class="text-xs font-cinzel tracking-widest text-amber-300">${q.code} · 시간의 방</div>
+          <h2 class="font-serif-kr text-2xl sm:text-4xl font-bold text-white mt-0.5">${q.title}</h2>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">${q.subtitle}</p>
+        </div>
+
+        <!-- 좌우 비교: 초기 가설(조사 전) vs 조사 결과(조사 후) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+          <!-- 좌측: 초기 가설 -->
+          <div class="md:col-span-5 fantasy-panel rounded-2xl p-5 flex flex-col justify-between border-amber-300/40 bg-amber-950/20">
+            <div>
+              <div class="flex items-center gap-2 text-amber-300 font-serif-kr font-bold text-lg border-b border-amber-400/25 pb-2.5 mb-4">
+                <i class="fa-solid fa-feather-pointed"></i>
+                <span>초기 가설 <span class="text-xs font-sans font-normal text-amber-200/75">(조사 전)</span></span>
+              </div>
+              <p class="font-serif-kr text-base sm:text-lg text-amber-50 leading-relaxed text-center my-6 px-2">
+                “사회적 분열은 서로 다른 의견과 가치관의 충돌로 인해 발생한다.”
+              </p>
+            </div>
+            <div class="text-xs text-amber-200/70 bg-black/30 rounded-xl p-3 text-center">
+              단순한 개인 간 의견 차이만을 원인으로 보았던 초기 관점
+            </div>
+          </div>
+
+          <!-- 중앙 모래시계 전환 아이콘 -->
+          <div class="md:col-span-1 flex items-center justify-center">
+            <div class="w-11 h-11 rounded-full fantasy-panel flex items-center justify-center text-amber-300 text-lg animate-pulse-glow">
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+          </div>
+
+          <!-- 우측: 조사 결과 (클릭하여 항목별 검증) -->
+          <div class="md:col-span-6 fantasy-panel rounded-2xl p-5 border-sky-400/45 bg-sky-950/20">
+            <div class="flex items-center justify-between border-b border-sky-400/30 pb-2.5 mb-3">
+              <div class="flex items-center gap-2 text-sky-200 font-serif-kr font-bold text-lg">
+                <i class="fa-solid fa-file-signature text-sky-300"></i>
+                <span>조사 결과 <span class="text-xs font-sans font-normal text-sky-200/75">(조사 후)</span></span>
+              </div>
+              <span class="text-xs font-cinzel text-sky-300 font-bold">${checkedCount}/5 검증</span>
+            </div>
+
+            <div class="space-y-2">
+              ${HYPOTHESIS_FACTORS.map((fac, idx) => {
+                const isChecked = gameState.q4VerifiedItems[idx];
+                return `
+                  <div onclick="verifyFactor(${idx})" class="p-2.5 rounded-xl border transition cursor-pointer flex items-center justify-between gap-2 ${isChecked ? 'bg-sky-500/20 border-sky-300 text-white' : 'bg-white/5 border-white/10 text-slate-300 hover:border-sky-300/50'}">
+                    <div class="flex items-center gap-2.5">
+                      <i class="fa-solid ${isChecked ? 'fa-circle-check text-sky-300' : 'fa-regular fa-circle text-slate-400'}"></i>
+                      <div>
+                        <span class="font-bold text-xs sm:text-sm">${fac.title}</span>
+                        <span class="text-[11px] text-sky-200/80 block sm:inline sm:ml-1.5">(${fac.sub})</span>
+                      </div>
+                    </div>
+                    <span class="text-[10px] text-sky-300 shrink-0">${isChecked ? '검증됨' : '확인'}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- 하단 Q&A + 검증 완료 버튼 -->
+        <div class="fantasy-panel rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div class="space-y-2 flex-1">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-bold shrink-0">Q. 질문</span>
+              <span class="font-serif-kr font-bold text-sm sm:text-base text-amber-100">${q.question}</span>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="px-2.5 py-0.5 rounded bg-sky-500/20 border border-sky-400/40 text-sky-200 text-xs font-bold shrink-0">A. 답변</span>
+              <p class="text-xs sm:text-sm text-slate-100 leading-relaxed">
+                ${allChecked ? q.answer : '<span class="text-amber-300/80 italic">우측 조사 결과의 5가지 요인을 모두 클릭해 대조·검증해주세요.</span>'}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 self-end lg:self-center">
+            <button onclick="openModal('journalModal')" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-amber-300/30 text-xs text-amber-100 transition">
+              <i class="fa-solid fa-book-open mr-1"></i> 조사 기록 열람
+            </button>
+            <button onclick="finishVerification()" ${allChecked ? '' : 'disabled'} class="fantasy-btn-gold px-5 py-2.5 rounded-xl font-serif-kr font-bold text-xs sm:text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-check"></i>
+              <span>검증 완료</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function verifyFactor(idx) {
+      if (!gameState.q4VerifiedItems[idx]) {
+        gameState.q4VerifiedItems[idx] = true;
+        playChime(600 + idx * 70, 0.22);
+      }
+      renderQuest(4);
+    }
+
+    function finishVerification() {
+      gameState.q4Completed = true;
+      completeQuest(4);
+      goToQuest(5);
+    }
+
+    /* ==================== QUEST 05 HTML & 액션 (최종 보고) ==================== */
+    function buildQuest5HTML(q) {
+      // Quest 05 진입 시 자동 완료 처리
+      if (!gameState.completedQuests.includes(5)) {
+        completeQuest(5);
+      }
+
+      const selectedGemQuest = QUEST_DATA.find(item => item.id === gameState.q5SelectedGem) || q;
+
+      const gemIcons = [
+        'fa-users',
+        'fa-file-magnifying-glass fa-magnifying-glass-chart',
+        'fa-diagram-project',
+        'fa-scale-balanced',
+        'fa-seedling'
+      ];
+
+      return `
+        <!-- 상단 최종 보고 양피지 배너 -->
+        <div class="fantasy-panel rounded-2xl p-5 sm:p-6 border-amber-300/70 bg-gradient-to-b from-amber-950/45 to-slate-950/85">
+          <div class="text-center border-b border-amber-400/30 pb-2.5 mb-4">
+            <span class="font-cinzel text-xs tracking-[0.3em] text-amber-300">✦ ${q.code} · 최종 보고 ✦</span>
+          </div>
+
+          <div class="max-w-3xl mx-auto space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="px-3 py-1 rounded-lg bg-purple-900/70 border border-purple-400/50 text-purple-200 text-xs font-bold shrink-0">질문</span>
+              <h2 class="font-serif-kr text-lg sm:text-2xl font-bold text-amber-100">${q.question}</h2>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="px-3 py-1 rounded-lg bg-amber-500/25 border border-amber-400/50 text-amber-200 text-xs font-bold shrink-0 mt-0.5">답변</span>
+              <p class="text-sm sm:text-base text-white leading-relaxed font-medium">
+                ${q.answer}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙: 빛의 선으로 연결된 5개의 수정 보석 (클릭 시 각 단계 요약 표시) -->
+        <div class="my-2">
+          <div class="grid grid-cols-5 gap-2 sm:gap-4 items-center max-w-4xl mx-auto relative">
+            <!-- 보석을 잇는 빛의 연결선 -->
+            <div class="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-purple-400 via-sky-300 to-amber-300 opacity-75 blur-[1px] pointer-events-none"></div>
+
+            ${QUEST_DATA.map((item, idx) => {
+              const isSelected = gameState.q5SelectedGem === item.id;
+              const isFifth = item.id === 5;
+              return `
+                <div onclick="selectFinalGem(${item.id})" class="flex flex-col items-center cursor-pointer group relative z-10">
+                  <div class="w-12 h-14 sm:w-16 sm:h-20 crystal-gem flex items-center justify-center text-lg sm:text-2xl shadow-xl ${
+                    isFifth
+                      ? 'bg-gradient-to-b from-amber-200 via-amber-500 to-amber-700 text-slate-950'
+                      : isSelected
+                      ? 'bg-gradient-to-b from-sky-200 via-indigo-500 to-purple-800 text-white'
+                      : 'bg-gradient-to-b from-indigo-300/80 via-indigo-700/85 to-slate-900 text-amber-100'
+                  } ${isSelected ? 'ring-4 ring-amber-300 scale-110' : ''}">
+                    <i class="fa-solid ${gemIcons[idx]}"></i>
+                  </div>
+                  <div class="mt-2 text-center">
+                    <div class="font-cinzel text-[10px] sm:text-xs font-bold text-amber-300">QUEST 0${item.id}</div>
+                    <div class="text-[10px] sm:text-xs text-white font-medium hidden sm:block">${item.shortTitle}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- 선택한 보석의 탐구 요약 카드 -->
+          <div class="max-w-3xl mx-auto mt-4 bg-white/5 border border-amber-300/30 rounded-xl p-3 text-center text-xs sm:text-sm text-amber-50">
+            <span class="text-amber-300 font-bold">[${selectedGemQuest.code} · ${selectedGemQuest.shortTitle}]</span>
+            <span class="ml-1.5">${selectedGemQuest.answer}</span>
+          </div>
+        </div>
+
+        <!-- 하단 우측: 조사 완료 배지 & 새로운 이야기로 -->
+        <div class="fantasy-panel rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-amber-300/60">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-amber-400/20 border border-amber-300 flex items-center justify-center text-amber-300 text-xl animate-pulse-glow">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <div class="font-serif-kr text-lg sm:text-xl font-bold text-amber-200">✦ 조사 완료 ✦</div>
+              <div class="text-xs sm:text-sm text-slate-200">분열된 도시는 다시 연결될 수 있을까? — 모든 단서의 연결을 마쳤습니다.</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 shrink-0">
+            <button onclick="openModal('journalModal')" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-amber-300/35 text-xs sm:text-sm text-amber-100 transition">
+              전체 보고서 보기
+            </button>
+            <button onclick="returnToTitle()" class="fantasy-btn-gold px-6 py-2.5 rounded-xl font-serif-kr font-bold text-xs sm:text-sm flex items-center gap-2">
+              <span>새로운 이야기로</span>
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectFinalGem(id) {
+      gameState.q5SelectedGem = id;
+      playChime(523.25 + id * 75, 0.25);
+      renderQuest(5);
+    }
+
+    /* =========================================================================
+       5. 모달 / 토스트 / 전체화면 유틸리티
+       ========================================================================= */
+    function openModal(modalId) {
+      playChime(587.33, 0.2);
+      if (modalId === 'inventoryModal') renderInventoryModal();
+      if (modalId === 'journalModal') renderJournalModal();
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function renderInventoryModal() {
+      const container = document.getElementById('inventoryList');
+      container.innerHTML = gameState.inventory.map(item => `
+        <div class="bg-white/5 border border-amber-300/30 rounded-xl p-3.5 flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-300/50 flex items-center justify-center text-amber-300 text-lg shrink-0">
+            <i class="fa-solid ${item.icon}"></i>
+          </div>
+          <div>
+            <div class="font-bold text-sm text-amber-100">${item.name}</div>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">${item.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderJournalModal() {
+      const container = document.getElementById('journalList');
+      container.innerHTML = QUEST_DATA.map(q => {
+        const isDone = gameState.completedQuests.includes(q.id);
+        return `
+          <div class="border rounded-xl p-4 ${isDone ? 'bg-amber-500/10 border-amber-300/40' : 'bg-black/30 border-white/10 opacity-70'}">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-cinzel text-xs font-bold text-amber-300">${q.code} · ${q.shortTitle}</span>
+              <span class="text-[11px] font-bold ${isDone ? 'text-emerald-300' : 'text-slate-400'}">
+                ${isDone ? '기록 완료 ✔' : '미완료'}
+              </span>
+            </div>
+            <div class="font-serif-kr font-bold text-sm text-white mb-1">Q. ${q.question}</div>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              ${isDone ? `A. ${q.answer}` : '해당 퀘스트를 완료하면 조사 답변이 기록됩니다.'}
+            </p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    let toastTimeout = null;
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      document.getElementById('toastText').textContent = msg;
+      box.classList.remove('opacity-0', 'translate-y-2');
+      box.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        box.classList.remove('opacity-100', 'translate-y-0');
+        box.classList.add('opacity-0', 'translate-y-2');
+      }, 2800);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // 배경 클릭 시 모달 닫기
+    ['inventoryModal', 'journalModal', 'codexModal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', (e) => {
+        if (e.target.id === id) closeModal(id);
+      });
+    });
+  </script>
+</body>
+</html>
