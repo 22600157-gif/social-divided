@@ -1305,7 +1305,8 @@
             <!-- 3개 순환 노드 배치 -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
               ${CLD_NODES.map((node, idx) => {
-                const isSelected = gameState.q3ActiveNode === idx;
+                const isSelected = gameState.q3ActiveNode === idx && gameState.q3Inspected[idx];
+
                 const isVisited = gameState.q3Inspected[idx];
                 const borderColors = {
                   amber: isSelected ? 'border-amber-300 bg-amber-500/25 shadow-[0_0_20px_rgba(251,191,36,0.4)]' : 'border-amber-400/40 bg-amber-950/30',
@@ -1330,7 +1331,7 @@
             <!-- 순환 강화 구조 배지 -->
             <div class="mt-4 bg-rose-950/50 border border-rose-500/40 rounded-xl p-2.5 text-center text-xs text-rose-100 flex items-center justify-center gap-2">
               <i class="fa-solid fa-arrows-spin text-rose-400 animate-spin-slow"></i>
-              <span><strong>지속·강화 구조 (R1):</strong> 확증편향 ➔ 혐오 표현 ➔ 공감 부족 ➔ 다시 확증편향 심화</span>
+              <span><strong>지속·강화 구조 (R1):</strong> 혐오 표현 ➔ 확증편향 ➔ 공감 부족 ➔ 다시 혐오 표현 심화</span>
             </div>
           </div>
 
@@ -1363,7 +1364,7 @@
             <div class="flex items-start gap-2.5">
               <span class="px-2.5 py-0.5 rounded bg-sky-500/20 border border-sky-400/40 text-sky-200 text-xs font-bold shrink-0">답변</span>
               <p class="text-xs sm:text-sm text-slate-100 leading-relaxed">
-                ${allInspected ? q.answer : '<span class="text-amber-300/80 italic">피드백 루프의 3가지 요소(확증편향, 혐오 표현, 공감 부족)를 모두 클릭하여 확인하세요.</span>'}
+                ${allInspected ? q.answer : '<span class="text-amber-300/80 italic">피드백 루프의 3가지 요소(혐오 표현, 확증편향, 공감 부족)를 모두 클릭하여 확인하세요.</span>'}
               </p>
             </div>
           </div>
